@@ -1,0 +1,45 @@
+import pandas as pd
+
+def read_and_replace_class_value(input_file):
+    # Read the CSV file
+    asddata = pd.read_csv(input_file)
+
+    while True:
+        # Display the shape of the data
+        print("Data shape:", asddata.shape)
+
+        # Count occurrences of each unique class value before replacement
+        print("Class value counts before replacement:")
+        class_value_counts_before = asddata.iloc[:, -1].value_counts()
+        print(class_value_counts_before)
+
+        # Ask the user for the condition to be applied
+        condition = input("Enter the condition to apply (e.g., > 30, == 'Uncertain', etc.): ")
+
+        # Ask the user which value to change and with what value to replace
+        value_to_change = input("Enter the value you want to change: ")
+        value_to_replace_with = input("Enter the value you want to replace it with: ")
+
+        # Apply the condition and perform replacement for multi-valued cells
+        condition_met = asddata.iloc[:, -1].apply(lambda x: eval("x " + condition) if not "'" in condition else x == value_to_change)
+        asddata.iloc[:, -1] = asddata.iloc[:, -1].where(~condition_met, value_to_replace_with)
+
+        # Count occurrences of each unique class value after replacement
+        print("\nClass value counts after replacement:")
+        class_value_counts_after = asddata.iloc[:, -1].value_counts()
+        print(class_value_counts_after)
+
+        # Ask if the user wants to continue with another replacement
+        another_replacement = input("Do you want to replace more values? (yes/no): ")
+
+        if another_replacement.lower() != 'yes':
+            # Break the loop if the user doesn't want to perform another replacement
+            break
+
+    # Return the updated DataFrame
+    return asddata
+
+# Example usage:
+if __name__ == "__main__":
+    filename = "input_matrix_asd_intermediate.csv"
+    updated_data = read_and_replace_class_value(filename)
