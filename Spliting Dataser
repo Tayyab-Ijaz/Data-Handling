@@ -1,0 +1,46 @@
+def filter_dataframe_Testing(updated_data, class_column, gene_column, uncertain_class,disease_class,notdisease_class):
+    # Filter the DataFrame to extract gene symbols based on the class value
+    gene_symbols_ASD = updated_data.loc[updated_data[class_column] == disease_class, gene_column].tolist()
+    gene_symbols_nonASD = updated_data.loc[updated_data[class_column] == notdisease_class, gene_column].tolist()
+    gene_symbols_Uncertain = updated_data.loc[updated_data[class_column] == uncertain_class, gene_column].tolist()
+
+    # List of values to use as condition for deletion
+    values_to_delete = list(gene_symbols_nonASD + gene_symbols_ASD) 
+
+    # Delete rows where the 'genes' column has values in the 'values_to_delete' list
+    df = updated_data[~updated_data[gene_column].isin(values_to_delete)].reset_index(drop=True)
+
+    # List of column names to delete
+    columns_to_delete = gene_symbols_Uncertain
+
+    # Delete columns specified in 'columns_to_delete' list
+    df2 = df.drop(columns=columns_to_delete)
+
+    return df2
+
+
+Testing_df = filter_dataframe_Testing(updated_data, class_column='class', gene_column='genes', uncertain_class='Uncertain',disease_class='ASD',notdisease_class='nonASD')
+Testing_df.shape
+
+
+def filter_dataframe_Training(updated_data, class_column, gene_column, uncertain_class,disease_class,notdisease_class):
+    # Filter the DataFrame to extract gene symbols based on the class value
+    gene_symbols_ASD = updated_data.loc[updated_data[class_column] == disease_class, gene_column].tolist()
+    gene_symbols_nonASD = updated_data.loc[updated_data[class_column] == notdisease_class, gene_column].tolist()
+    gene_symbols_Uncertain = updated_data.loc[updated_data[class_column] == uncertain_class, gene_column].tolist()
+   
+    # List of values to use as condition for deletion
+    values_to_delete= list(gene_symbols_Uncertain) 
+
+    # Delete rows where the 'genes' column has values in the 'values_to_delete' list
+    df = updated_data[~updated_data[gene_column].isin(values_to_delete)].reset_index(drop=True)
+
+    # List of column names to delete
+    columns_to_delete = gene_symbols_Uncertain
+
+    # Delete columns specified in 'columns_to_delete' list
+    df2 = df.drop(columns=columns_to_delete)
+    return df2
+
+Training_df = filter_dataframe_Training(updated_data, class_column='class', gene_column='genes', uncertain_class='Uncertain',disease_class='ASD',notdisease_class='nonASD')
+Training_df.shape
